@@ -7,5 +7,6 @@
 Mat getMask(Mat input);
 // Get the user specified curves
 vector<icPoint> getPoints(Mat input, Mat mask);
-
+// Ask the user to specify the numbers of regions
+Mat getRegions(Mat input, Mat mask, vector<icPoint> points);
 #endif

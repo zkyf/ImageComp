@@ -62,10 +62,15 @@ vector<icPoint> getPoints(Mat input, Mat mask)
 	int lpoint = -1;
 	imshow("Specify structure curves", input);
 	setMouseCallback("Specify structure curves", mouseCallBack);
+	Mat _mask;
+	cvtColor(mask, _mask, CV_GRAY2BGR);
+	Mat temp;
+	Mat lines(input.size(), CV_8U, Scalar::all(0));
+	bitwise_xor(input, _mask, temp);
 	bool conti = true;
 	while (1)
 	{
-		Mat toshow = input.clone();
+		Mat toshow = temp.clone();
 		if (mouse_event == CV_EVENT_LBUTTONDOWN)
 		{
 			bool selected = false;
@@ -140,9 +145,8 @@ vector<icPoint> getPoints(Mat input, Mat mask)
 			}
 		}
 		circle(toshow, mouse_pos, size, Scalar(0, 0, 255), -1);
-		if (mouse_event == CV_EVENT_RBUTTONUP)
+		if (mouse_event == CV_EVENT_RBUTTONDOWN)
 		{
-			if (!conti) break;
 			conti = false;
 		}
 		imshow("Specify structure curves", toshow);
@@ -157,5 +161,23 @@ vector<icPoint> getPoints(Mat input, Mat mask)
 		}
 	}
 	destroyWindow("Specify structure curves");
+	for (int i = 0; i < ret.size(); i++)
+	{
+
+	}
 	return ret;
+}
+
+Mat getRegions(Mat input, Mat mask, vector<icPoint> points)
+{
+	int top = input.rows, bottom = 0;
+	int left = input.cols, right = 0;
+	for (int i = 0; i < points.size(); i++)
+	{
+		if (points[i].pos.x < left) left = points[i].pos.x;
+		if (points[i].pos.x > right) right = points[i].pos.x;
+		if (points[i].pos.y < top) top = points[i].pos.y;
+		if (points[i].pos.y > bottom) bottom = points[i].pos.y;
+	}
+	return Mat();
 }
