@@ -92,6 +92,14 @@ vector<icPoint> getPoints(Mat input, Mat mask)
 				icPoint newp;
 				newp.pos = mouse_pos;
 				newp.num = count;
+				if (mask.at<uchar>(newp.pos) > 0)
+				{
+					newp.type = icPoint::INNER;
+				}
+				else
+				{
+					newp.type = icPoint::OUTER;
+				}
 				if (conti)
 				{
 					if (lpoint != -1)
@@ -120,7 +128,15 @@ vector<icPoint> getPoints(Mat input, Mat mask)
 			}
 			else
 			{
-				circle(toshow, ret[i].pos, size, Scalar(255, 0, 0), -1);
+				switch(ret[i].type)
+				{
+					case icPoint::INNER:
+					circle(toshow, ret[i].pos, size, Scalar(255, 0, 0), -1); break;
+					case icPoint::OUTER:
+					circle(toshow, ret[i].pos, size, Scalar(37, 127, 255), -1); break;
+					case icPoint::BORDER:
+					circle(toshow, ret[i].pos, size, Scalar(0, 0, 255), -1); break;
+				}
 			}
 		}
 		circle(toshow, mouse_pos, size, Scalar(0, 0, 255), -1);
@@ -130,7 +146,15 @@ vector<icPoint> getPoints(Mat input, Mat mask)
 			conti = false;
 		}
 		imshow("Specify structure curves", toshow);
-		waitKey(10);
+		char key = waitKey(10);
+		if (key==' ')
+		{
+			ret[lpoint].type = icPoint::BORDER;
+		}
+		if(key == 27)
+		{
+			break;
+		}
 	}
 	destroyWindow("Specify structure curves");
 	return ret;
